@@ -268,7 +268,10 @@ function make(o={},seed=Date.now()){
  if(challenge)queueLife(s,'opening_challenge_'+challenge.id,2);
 
  const egg=openingEasterEgg(s,o.name);
- if(egg)s.secretEnding=egg;
+ if(egg==='anniversary'){
+  s.stage='event';
+  s.eventId='secret_anniversary_invite';
+ }else if(egg)s.secretEnding=egg;
  return s;
 
 }
@@ -867,7 +870,7 @@ function choose(s,i,topic){
 
  const ok=resolveChoice(s,i,topic);
 
- if(ok&&selected){
+ if(ok&&selected&&selected.id!=='secret_anniversary_invite'){
 
   recordStatChanges(s,before,selected.title);
 
@@ -896,9 +899,9 @@ function resolveChoice(s,i,topic){
  if(e.id==='secret_anniversary_invite'){
   if(topic!==undefined)return false;
   s.used.push(e.id);
-  s.eventId=c.enterAnniversary?anniversaryEventId:null;
-  s.stage=c.enterAnniversary?'event':'focus';
-  s.lastResult=c.note;
+  s.eventId=null;
+  s.stage='focus';
+  if(c.enterAnniversary)s.secretEnding='anniversary';
   return true;
  }
  if(e.id==='cash_lifeline')return chooseCashLifeline(s,c.lifeline);
@@ -3370,9 +3373,9 @@ function resolveSecretEnding(s,continuePlaying){
  return true;
 }
 events.push(
- {id:'secret_anniversary_invite',title:'一封寫給愛姆的週年邀請',body:'五盞夢燈提早亮了起來。要現在打開週年故事嗎？',tag:'開局彩蛋',storyOnly:true,major:true,choices:[
-  C('前往週年事件','你推開了週年直播間的門。',{}, {enterAnniversary:true}),
-  C('從開局繼續遊玩','你把邀請留在桌上，先開始自己的生涯。')
+ {id:'secret_anniversary_invite',title:'一封寫給愛姆的週年邀請',body:'五盞夢燈提早亮了起來。你想先看「20＋5｜五週年快樂」的結局，還是直接開始主播生涯？',tag:'開局彩蛋',storyOnly:true,major:true,choices:[
+  C('觀看五週年結局','你推開了週年直播間的門。',{}, {enterAnniversary:true}),
+  C('直接開始生涯','你把邀請留在桌上，先開始自己的生涯。')
  ]},
  {id:'secret_wedding',title:'兩盞夢燈，一個家',body:'在這個夢境裡，你不行和愛姆要一起辦一場婚禮。你想怎麼記住今天？',tag:'隱藏結婚事件',storyOnly:true,major:true,choices:[
   C('在窗邊交換誓言','兩人在最熟悉的窗邊交換誓言。'),

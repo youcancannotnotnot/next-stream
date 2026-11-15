@@ -162,7 +162,7 @@ function landing(){document.querySelector('#return-home').hidden=true;app.innerH
 
  };
 
- document.querySelector('#start').onsubmit=e=>{e.preventDefault();let f=new FormData(e.target),o=Object.fromEntries(f);if(E.ageAtDebut(o.birthday,o.debut)===null){toast('初配信日期須在角色生日當天或之後。');return;}let begin=()=>{state=E.make(o,crypto.getRandomValues(new Uint32Array(1))[0]);E.setWorkMode(state,'salary');clockDays=7;fastMode=false;save();render();if(!state.secretEnding)intro()};if(saved){modal('<h2>開始另一段人生？</h2><p>新故事會取代這個瀏覽器的目前存檔。原本的故事可以先繼續遊玩或匯出。</p><button class="primary" id="confirm-start">開始新故事</button>');document.querySelector('#confirm-start').onclick=()=>{dialog.close();begin()}}else begin()};}
+ document.querySelector('#start').onsubmit=e=>{e.preventDefault();let f=new FormData(e.target),o=Object.fromEntries(f);if(E.ageAtDebut(o.birthday,o.debut)===null){toast('初配信日期須在角色生日當天或之後。');return;}let begin=()=>{state=E.make(o,crypto.getRandomValues(new Uint32Array(1))[0]);E.setWorkMode(state,'salary');clockDays=7;fastMode=false;save();render();if(!state.secretEnding&&state.eventId!=='secret_anniversary_invite')intro()};if(saved){modal('<h2>開始另一段人生？</h2><p>新故事會取代這個瀏覽器的目前存檔。原本的故事可以先繼續遊玩或匯出。</p><button class="primary" id="confirm-start">開始新故事</button>');document.querySelector('#confirm-start').onclick=()=>{dialog.close();begin()}}else begin()};}
 
 function intro(){
 
@@ -650,9 +650,11 @@ function render(){
 
  app.querySelectorAll('[data-choice]').forEach(b=>b.onclick=()=>{
 
+  const openingInvite=state.eventId==='secret_anniversary_invite';
   if(E.choose(state,Number(b.dataset.choice))){
 
    stopLife('選項已結算');commit();
+   if(openingInvite&&!state.secretEnding)intro();
 
   }else toast('目前無法執行這個選項。');
 
